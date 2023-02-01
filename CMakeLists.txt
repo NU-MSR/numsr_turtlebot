@@ -17,6 +17,8 @@ ament_target_dependencies(numsr_turtlebot dynamixel_sdk rclcpp)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
+install(TARGETS numsr_turtlebot DESTINATION lib/${PROJECT_NAME})
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
