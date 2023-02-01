@@ -1,4 +1,7 @@
 This package contains code from
 https://github.com/ROBOTIS-GIT/turtlebot3/turtlebot3_node
 
-Namely the dynamixel_sdk_wrapper
+Files included/modified
+src/dynamixel_sdk_wrapper.cpp
+include/numsr_turtlebot/dynamixel_sdk_wrapper.hpp
+include/numsr_turtlebot/control_table.hpp

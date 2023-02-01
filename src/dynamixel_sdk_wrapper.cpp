@@ -13,8 +13,11 @@
 // limitations under the License.
 //
 // Author: Darby Lim
+// Modified by Matthew Elwin: to change location of dynamixel_sdk_wrapper and include guards
+#ifndef DYNAMIXEL_SDK_WRAPPER_H
+#define DYNAMIXEL_SDK_WRAPPER_H
 
-#include "turtlebot3_node/dynamixel_sdk_wrapper.hpp"
+#include "numsr_turtlebot/dynamixel_sdk_wrapper.hpp"
 
 #include <algorithm>
 #include <string>
@@ -180,3 +183,5 @@ bool DynamixelSDKWrapper::write_register(
 
   return false;
 }
+
+#endif

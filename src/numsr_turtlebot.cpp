@@ -1,17 +1,20 @@
+// This code is loosely based on code from ROBOTIS turtlebot3_node
 #include "numsr_turtlebot/dynamixel_sdk_wrapper.hpp"
+#include "numsr_turtlebot/control_table.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-#include "numsr_turtlebot/dynamixel_sdk_wrapper.hpp"
-#include "rclcpp/rclcpp.hpp"
+using robotis::turtlebot3::DynamixelSDKWrapper;
+using robotis::turtlebot3::extern_control_table;
 
 class NuTurtlebot : public rclcpp::Node
 {
 public:
-    NuMSRTurtlebot():
+    NuTurtlebot():
         Node("numsr_turtlebot"),
         opencr{"/dev/ttyACM0", 200, 1000000, 2.0f},
         dxl_sdk_wrapper{std::make_shared<DynamixelSDKWrapper>(opencr)}
     {
+        // initialize the dynamixel sdk and connect
         dxl_sdk_wrapper->init_read_memory(
             extern_control_table.millis.addr,
             (extern_control_table.profile_acceleration_right.addr - extern_control_table.millis.addr) +
@@ -24,7 +27,7 @@ public:
         std::string sdk_msg;
         uint8_t reset = 1;
 
-        dxl_sdk_wrapper_->set_data_to_device(
+        dxl_sdk_wrapper->set_data_to_device(
             extern_control_table.imu_re_calibration.addr,
             extern_control_table.imu_re_calibration.length,
             &reset,
@@ -37,7 +40,7 @@ public:
 private:
     DynamixelSDKWrapper::Device opencr;
     std::shared_ptr<DynamixelSDKWrapper> dxl_sdk_wrapper;
-}
+};
 
 int main(int argc, char * argv[])
 {

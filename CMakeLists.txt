@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(numsr_turtlebot_node)
+project(numsr_turtlebot)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -7,8 +7,11 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-
-add_executable(numsr_turtlebot_node src/numsr_turtlebot.cpp dynamixel_wrapper_sdk.cpp)
+find_package(dynamixel_sdk REQUIRED)
+find_package(rclcpp REQUIRED)
+add_executable(numsr_turtlebot src/numsr_turtlebot.cpp src/dynamixel_sdk_wrapper.cpp)
+target_include_directories(numsr_turtlebot PUBLIC include/)
+ament_target_dependencies(numsr_turtlebot dynamixel_sdk rclcpp)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
