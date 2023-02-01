@@ -36,7 +36,16 @@ public:
         RCLCPP_INFO_STREAM(get_logger(), "Start Calibration of Gyro");
         rclcpp::sleep_for(std::chrono::seconds(5));
         RCLCPP_INFO_STREAM(get_logger(), "Calibration End");
+
+        if(-1 == dxl_sdk_wrapper->get_data_from_device<int8_t>(
+                extern_control_table.device_status.addr,
+                extern_control_table.device_status.length)
+            )
+        {
+            throw std::runtime_error("Failed to connect to motors");
+        }
     }
+
 private:
     DynamixelSDKWrapper::Device opencr;
     std::shared_ptr<DynamixelSDKWrapper> dxl_sdk_wrapper;

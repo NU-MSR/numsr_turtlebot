@@ -5,3 +5,5 @@ Files included/modified
 src/dynamixel_sdk_wrapper.cpp
 include/numsr_turtlebot/dynamixel_sdk_wrapper.hpp
 include/numsr_turtlebot/control_table.hpp
+
+The numsr_turtlebot.cpp is inspired by turtlebot.cpp in the turtlebot3_node package
