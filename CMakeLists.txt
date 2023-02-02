@@ -9,9 +9,10 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(dynamixel_sdk REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(nuturtlebot_msgs REQUIRED)
 add_executable(numsr_turtlebot src/numsr_turtlebot.cpp src/dynamixel_sdk_wrapper.cpp)
 target_include_directories(numsr_turtlebot PUBLIC include/)
-ament_target_dependencies(numsr_turtlebot dynamixel_sdk rclcpp)
+ament_target_dependencies(numsr_turtlebot dynamixel_sdk nuturtlebot_msgs rclcpp)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.

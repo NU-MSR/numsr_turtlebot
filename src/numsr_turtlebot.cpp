@@ -2,13 +2,14 @@
 #include "numsr_turtlebot/dynamixel_sdk_wrapper.hpp"
 #include "numsr_turtlebot/control_table.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "nuturtlebot_msgs/wheel_commands.hpp"
-#include "nuturtlebot_msgs/sensor_data.hpp"
+#include "nuturtlebot_msgs/msg/wheel_commands.hpp"
+#include "nuturtlebot_msgs/msg/sensor_data.hpp"
 
 using robotis::turtlebot3::DynamixelSDKWrapper;
 using robotis::turtlebot3::extern_control_table;
 
 using namespace std::chrono_literals;
+using std::placeholders::_1;
 
 class NuTurtlebot : public rclcpp::Node
 {
@@ -49,7 +50,7 @@ public:
             throw std::runtime_error("Failed to connect to motors");
         }
 
-        subscriber = create_subscription<nuturtlebot_msgs::msg::WheelCommands>("wheel_cmd", 10, std::bind(&NuTurtlebot::wheel_cmd_callback, this));
+        subscriber = create_subscription<nuturtlebot_msgs::msg::WheelCommands>("wheel_cmd", 10, std::bind(&NuTurtlebot::wheel_cmd_callback, this, _1));
         publisher = create_publisher<nuturtlebot_msgs::msg::SensorData>("sensor_data", 10);
         timer = create_wall_timer(100ms,
                                   std::bind(&NuTurtlebot::timer_callback, this));
@@ -57,6 +58,23 @@ public:
 
     void timer_callback()
     {
+        nuturtlebot_msgs::msg::SensorData sensor_data;
+        sensor_data.stamp = get_clock()->now();
+
+        dxl_sdk_wrapper->read_data_set();
+
+        // read wheel encoders
+        std::array<int32_t, 2> position =
+            {dxl_sdk_wrapper->get_data_from_device<int32_t>(
+                    extern_control_table.present_position_left.addr,
+                    extern_control_table.present_position_left.length),
+             dxl_sdk_wrapper->get_data_from_device<int32_t>(
+                 extern_control_table.present_position_right.addr,
+                 extern_control_table.present_position_right.length)};
+        sensor_data.left_encoder = position.at(0);
+        sensor_data.right_encoder = position.at(1);
+
+        publisher->publish(sensor_data);
 
     }
 
@@ -67,6 +85,7 @@ public:
 private:
     DynamixelSDKWrapper::Device opencr;
     std::shared_ptr<DynamixelSDKWrapper> dxl_sdk_wrapper;
+    rclcpp::TimerBase::SharedPtr timer;
     rclcpp::Publisher<nuturtlebot_msgs::msg::SensorData>::SharedPtr publisher;
     rclcpp::Subscription<nuturtlebot_msgs::msg::WheelCommands>::SharedPtr subscriber;
 };
