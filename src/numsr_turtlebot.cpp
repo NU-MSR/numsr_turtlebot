@@ -52,6 +52,16 @@ public:
             throw std::runtime_error("Failed to connect to motors");
         }
 
+        // enable the motors
+        if(uint8_t value=1;
+           !dxl_sdk_wrapper_->set_data_to_device(
+               extern_control_table.motor_torque_enable.addr,
+               extern_control_table.motor_torque_enable.length,
+               &value))
+        {
+            throw std::runtime_error("Failed to enable motors");
+        }
+
         subscriber = create_subscription<nuturtlebot_msgs::msg::WheelCommands>("wheel_cmd", 10, std::bind(&NuTurtlebot::wheel_cmd_callback, this, _1));
         publisher = create_publisher<nuturtlebot_msgs::msg::SensorData>("sensor_data", 10);
         sound_srv = create_service<turtlebot3_msgs::srv::Sound>("sound",
