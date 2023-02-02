@@ -1,4 +1,5 @@
 // This code is loosely based on code from ROBOTIS turtlebot3_node
+#include "turtlebot3_msgs/srv/sound.hpp"
 #include "numsr_turtlebot/dynamixel_sdk_wrapper.hpp"
 #include "numsr_turtlebot/control_table.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -10,6 +11,7 @@ using robotis::turtlebot3::extern_control_table;
 
 using namespace std::chrono_literals;
 using std::placeholders::_1;
+using std::placeholders::_2;
 
 class NuTurtlebot : public rclcpp::Node
 {
@@ -52,6 +54,8 @@ public:
 
         subscriber = create_subscription<nuturtlebot_msgs::msg::WheelCommands>("wheel_cmd", 10, std::bind(&NuTurtlebot::wheel_cmd_callback, this, _1));
         publisher = create_publisher<nuturtlebot_msgs::msg::SensorData>("sensor_data", 10);
+        sound_srv = create_service<turtlebot3_msgs::srv::Sound>("sound",
+                                                                std::bind(&NuTurtlebot::sound_callback, this, _1, _2));
         timer = create_wall_timer(100ms,
                                   std::bind(&NuTurtlebot::timer_callback, this));
     }
@@ -78,6 +82,16 @@ public:
 
     }
 
+    void sound_callback(std::shared_ptr<turtlebot3_msgs::srv::Sound::Request> req,
+                        std::shared_ptr<turtlebot3_msgs::srv::Sound::Response> resp)
+    {
+        resp->success = dxl_sdk_wrapper->set_data_to_device(
+            extern_control_table.sound.addr,
+            extern_control_table.sound.length,
+            &req->value,
+            &resp->message);
+    }
+
     void wheel_cmd_callback(const nuturtlebot_msgs::msg::WheelCommands & wheel_cmd)
     {
     }
@@ -85,9 +99,10 @@ public:
 private:
     DynamixelSDKWrapper::Device opencr;
     std::shared_ptr<DynamixelSDKWrapper> dxl_sdk_wrapper;
-    rclcpp::TimerBase::SharedPtr timer;
     rclcpp::Publisher<nuturtlebot_msgs::msg::SensorData>::SharedPtr publisher;
     rclcpp::Subscription<nuturtlebot_msgs::msg::WheelCommands>::SharedPtr subscriber;
+    rclcpp::Service<turtlebot3_msgs::srv::Sound>::SharedPtr sound_srv;
+    rclcpp::TimerBase::SharedPtr timer;
 };
 
 int main(int argc, char * argv[])
