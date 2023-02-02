@@ -54,10 +54,10 @@ public:
 
         // enable the motors
         if(uint8_t value=1;
-           !dxl_sdk_wrapper_->set_data_to_device(
+           !dxl_sdk_wrapper->set_data_to_device(
                extern_control_table.motor_torque_enable.addr,
                extern_control_table.motor_torque_enable.length,
-               &value))
+               &value,nullptr))
         {
             throw std::runtime_error("Failed to enable motors");
         }
@@ -104,6 +104,32 @@ public:
 
     void wheel_cmd_callback(const nuturtlebot_msgs::msg::WheelCommands & wheel_cmd)
     {
+      /// Adapted from turtlebot3_node/turtlebot.cpp:cmd_vel_callback
+      ///  To be paired with firmware from ME495-Navigation/OpenCR
+      /// Which can be easily built with the docker container in ME495-Navigation/nuturtlebot/raspi_image/opencr docker container
+      std::string sdk_msg;
+
+      union Data {
+        int32_t dword[6];
+        uint8_t byte[4 * 6];
+      } data;
+
+      data.dword[0] = 0;
+      data.dword[1] = 0;
+      data.dword[2] = 1.0; // This 1.0 signals raw mode
+      data.dword[3] = wheel_cmd.left_velocity;
+      data.dword[4] = wheel_cmd.right_velocity;
+      data.dword[5] = 0;
+
+      uint16_t start_addr = extern_control_table.cmd_velocity_linear_x.addr;
+      uint16_t addr_length =
+      (extern_control_table.cmd_velocity_angular_z.addr -
+      extern_control_table.cmd_velocity_linear_x.addr) +
+      extern_control_table.cmd_velocity_angular_z.length;
+
+      uint8_t * p_data = &data.byte[0];
+
+      dxl_sdk_wrapper->set_data_to_device(start_addr, addr_length, p_data, &sdk_msg);
     }
 
 private:
