@@ -88,6 +88,11 @@ public:
         sensor_data.left_encoder = position.at(0);
         sensor_data.right_encoder = position.at(1);
 
+        // read battery state
+        sensor_data.battery_voltage = 0.01f * dxl_sdk_wrapper->get_data_from_device<int32_t>(
+            extern_control_table.battery_voltage.addr,
+            extern_control_table.battery_voltage.length);
+
         publisher->publish(sensor_data);
 
     }
