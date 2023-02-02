@@ -2,9 +2,13 @@
 #include "numsr_turtlebot/dynamixel_sdk_wrapper.hpp"
 #include "numsr_turtlebot/control_table.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "nuturtlebot_msgs/wheel_commands.hpp"
+#include "nuturtlebot_msgs/sensor_data.hpp"
 
 using robotis::turtlebot3::DynamixelSDKWrapper;
 using robotis::turtlebot3::extern_control_table;
+
+using namespace std::chrono_literals;
 
 class NuTurtlebot : public rclcpp::Node
 {
@@ -44,11 +48,27 @@ public:
         {
             throw std::runtime_error("Failed to connect to motors");
         }
+
+        subscriber = create_subscription<nuturtlebot_msgs::msg::WheelCommands>("wheel_cmd", 10, std::bind(&NuTurtlebot::wheel_cmd_callback, this));
+        publisher = create_publisher<nuturtlebot_msgs::msg::SensorData>("sensor_data", 10);
+        timer = create_wall_timer(100ms,
+                                  std::bind(&NuTurtlebot::timer_callback, this));
+    }
+
+    void timer_callback()
+    {
+
+    }
+
+    void wheel_cmd_callback(const nuturtlebot_msgs::msg::WheelCommands & wheel_cmd)
+    {
     }
 
 private:
     DynamixelSDKWrapper::Device opencr;
     std::shared_ptr<DynamixelSDKWrapper> dxl_sdk_wrapper;
+    rclcpp::Publisher<nuturtlebot_msgs::msg::SensorData>::SharedPtr publisher;
+    rclcpp::Subscription<nuturtlebot_msgs::msg::WheelCommands>::SharedPtr subscriber;
 };
 
 int main(int argc, char * argv[])
