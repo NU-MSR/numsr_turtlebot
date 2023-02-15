@@ -66,7 +66,7 @@ public:
         publisher = create_publisher<nuturtlebot_msgs::msg::SensorData>("sensor_data", 10);
         sound_srv = create_service<turtlebot3_msgs::srv::Sound>("sound",
                                                                 std::bind(&NuTurtlebot::sound_callback, this, _1, _2));
-        timer = create_wall_timer(100ms,
+        timer = create_wall_timer(10ms,
                                   std::bind(&NuTurtlebot::timer_callback, this));
     }
 
