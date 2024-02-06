@@ -85,16 +85,14 @@ bool DynamixelSDKWrapper::set_data_to_device(
   ret = write_register(device_.id, addr, length, get_data, &log);
 
   if (ret == true) {
-      if(msg) //modified from original, allow msg to be null
-      {
-          *msg = "Succeeded to write data";
-      }
+    if (msg) {//modified from original, allow msg to be null
+      *msg = "Succeeded to write data";
+    }
     return true;
   } else {
-      if(msg)
-      {
-          *msg = "Failed to write data" + std::string(log);
-      }
+    if (msg) {
+      *msg = "Failed to write data" + std::string(log);
+    }
     return false;
   }
 
